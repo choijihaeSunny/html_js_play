@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>출퇴근 데이터 생성</title>
+</head>
+<body>
+    <h2>출퇴근 데이터</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>직원 ID</th>
+                <th>날짜</th>
+                <th>시간</th>
+                <th>상태</th>
+            </tr>
+        </thead>
+        <tbody id="data-body"></tbody>
+    </table>
+
+    <script>
+        function getRandomTime(startHour, endHour) {
+            const hour = String(Math.floor(Math.random() * (endHour - startHour + 1)) + startHour).padStart(2, '0');
+            const minute = String(Math.floor(Math.random() * 60)).padStart(2, '0');
+            const second = String(Math.floor(Math.random() * 60)).padStart(2, '0');
+            return `${hour}${minute}${second}`;
+        }
+
+        function getNextDay(dateStr) {
+            const year = parseInt(dateStr.substring(0, 4));
+            const month = parseInt(dateStr.substring(4, 6)) - 1;
+            const day = parseInt(dateStr.substring(6, 8));
+            const date = new Date(year, month, day);
+            date.setDate(date.getDate() + 1);
+            return date.getFullYear() + String(date.getMonth() + 1).padStart(2, '0') + String(date.getDate()).padStart(2, '0');
+        }
+
+        function getDateRange(startDate, endDate) {
+            let dates = [];
+            let currentDate = startDate;
+            while (currentDate <= endDate) {
+                dates.push(currentDate);
+                currentDate = getNextDay(currentDate);
+            }
+            return dates;
+        }
+
+        function isWeekend(dateStr) {
+            const year = parseInt(dateStr.substring(0, 4));
+            const month = parseInt(dateStr.substring(4, 6)) - 1;
+            const day = parseInt(dateStr.substring(6, 8));
+            const date = new Date(year, month, day);
+            const dayOfWeek = date.getDay();
+            return dayOfWeek === 0 || dayOfWeek === 6; // 0: 일요일, 6: 토요일
+        }
+
+        const employees = [
+            "5711239000212", "9306219000493", "7010279000646", "8007169000099", 
+            "9702219000559", "7710299000715", "7605139000261", "6803309000610"
+        ];
+        
+        const startDate = "20250301";
+        const endDate = "20250331";
+        const dates = getDateRange(startDate, endDate);
+        const tbody = document.getElementById("data-body");
+
+        employees.forEach(empId => {
+            dates.forEach(date => {
+                let records = [];
+                let weekend = isWeekend(date);
+                let generateData = weekend ? Math.random() < 0.2 : true; // 주말이면 20% 확률로 생성
+                
+                if (!generateData) return;
+                
+                let hasEntry = Math.random() > 0.1; // 출근 기록이 있을 확률
+                let hasExit = Math.random() > 0.1;  // 퇴근 기록이 있을 확률
+                
+                let startTime = hasEntry ? getRandomTime(6, 11) : null;
+                let leaveTime = hasExit ? getRandomTime(13, 23) : null;
+                let leaveDate = date;
+                
+                if (leaveTime && parseInt(leaveTime.substring(0, 2)) < 6) {
+                    leaveDate = getNextDay(date);
+                }
+                
+                if (startTime) records.push({ time: startTime, status: 1 });
+                
+                if (Math.random() < 0.2 && startTime && leaveTime) { // 외출 확률 낮음
+                    let outTime = getRandomTime(Math.max(8, parseInt(startTime.substring(0, 2)) + 1), 16);
+                    let returnTime = getRandomTime(parseInt(outTime.substring(0, 2)) + 1, 17);
+                    records.push({ time: outTime, status: 2 });
+                    records.push({ time: returnTime, status: 3 });
+                }
+                
+                if (leaveTime) records.push({ time: leaveTime, status: 4, date: leaveDate });
+                
+                records.forEach(record => {
+                    const row = tbody.insertRow();
+                    row.insertCell(0).textContent = empId;
+                    row.insertCell(1).textContent = record.date || date;
+                    row.insertCell(2).textContent = record.time;
+                    row.insertCell(3).textContent = record.status;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

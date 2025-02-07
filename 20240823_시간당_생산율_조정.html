@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<h2>계산기</h2>
+생산관리-생산실적-설비가동률 : C/STUD  95~96%  다른 생산라인은 90~97%
+<br>
+생산-POP-품목별 시간당 생산량조회에서 수정
+<br><br>
+<button type="button" onclick="cal()">계산</button>
+<br><br>
+
+<h4>생산계획시간SUM</h4>
+<input type="text" id="a" size="8">
+<h4>데이터갯수</h4>
+<input type="text" id="b" size="8">
+<h4>최소설비가동율</h4>
+<input type="text" id="c" size="8">
+<h4>최대설비가동율</h4>
+<input type="text" id="d" size="8">
+<br>
+<h4>작업수량</h4>
+<input type="text" id="e" size="8">
+<br><br><br>
+최소작업수량 : <input type="text" id="result1" size="8">
+최대작업수량 : <input type="text" id="result2" size="8">
+<br><br><br>
+최소작업시간 : <input type="text" id="result3" size="8">
+최대작업시간 : <input type="text" id="result4" size="8">
+<br>
+<input type="text" id="result5" size="4"> 시간 <input type="text" id="result6" size="4"> 분 또는
+<input type="text" id="result7" size="4"> 시간 <input type="text" id="result8" size="8"> 분 
+
+
+<script type="text/javascript">
+let a, b, c, d, e;	// 전역변수
+var min, max;
+var t_min, t_max;
+var hmax, mmax, hmin, mmin;
+
+function setValue() {
+	a = parseInt(document.getElementById('a').value); // 입력값 받기
+	b = parseInt(document.getElementById('b').value);
+	c = parseInt(document.getElementById('c').value);
+	d = parseInt(document.getElementById('d').value);
+	e = parseInt(document.getElementById('e').value);
+}
+
+function cal() {
+	setValue();
+	min = ((a / d) * 100) / b;
+	max = ((a / c) * 100) / b;
+	t_min = (e * 60) / max;
+	t_max = (e * 60) / min;
+	hmax = max / 60 - 1; 
+	mmax = max % 60;
+	hmin = min / 60 - 1;
+	mmin = min % 60;
+	
+	document.getElementById('result1').value = Math.ceil(t_min);
+	document.getElementById('result2').value = Math.ceil(t_max);
+	document.getElementById('result3').value = Math.ceil(min);
+	document.getElementById('result4').value = Math.ceil(max);
+
+	document.getElementById('result5').value = Math.ceil(hmax);
+	document.getElementById('result6').value = Math.ceil(mmax);
+	document.getElementById('result7').value = Math.ceil(hmin);
+	document.getElementById('result8').value = Math.ceil(mmin);
+}
+</script>
+</body>
+</html>
