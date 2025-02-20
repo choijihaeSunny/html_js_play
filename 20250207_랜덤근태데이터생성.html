@@ -54,14 +54,19 @@
             const dayOfWeek = date.getDay();
             return dayOfWeek === 0 || dayOfWeek === 6; // 0: 일요일, 6: 토요일
         }
+		
+		function isHoliday(dateStr) {
+			const holidays = ["20241225", "20241231"]; // 크리스마스, 연말 (예시)
+			return holidays.includes(dateStr);
+		}
 
         const employees = [
             "5711239000212", "9306219000493", "7010279000646", "8007169000099", 
             "9702219000559", "7710299000715", "7605139000261", "6803309000610"
         ];
         
-        const startDate = "20250301";
-        const endDate = "20250331";
+        const startDate = "20241201";
+        const endDate = "20241231";
         const dates = getDateRange(startDate, endDate);
         const tbody = document.getElementById("data-body");
 
@@ -69,7 +74,8 @@
             dates.forEach(date => {
                 let records = [];
                 let weekend = isWeekend(date);
-                let generateData = weekend ? Math.random() < 0.2 : true; // 주말이면 20% 확률로 생성
+				let holiday = isHoliday(date);
+                let generateData = weekend || holiday ? Math.random() < 0.2 : true; // 주말이면 20% 확률로 생성
                 
                 if (!generateData) return;
                 
